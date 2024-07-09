@@ -1,0 +1,5 @@
+--interp
+-cp ./
+-D analyzer-optimize
+-lib hxopenai_api
+-main Main

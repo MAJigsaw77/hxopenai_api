@@ -1,0 +1,15 @@
+{
+	"name": "hxopenai_api",
+	"url": "https://github.com/MAJigsaw77/hxopenai_api",
+	"license": "MIT",
+	"tags": [
+		"haxe",
+		"openai"
+	],
+	"description": "Haxe bindings for OpenAI API.",
+	"version": "1.0.0",
+	"releasenote": "Initial release.",
+	"contributors": [
+		"MAJigsaw77"
+	]
+}
