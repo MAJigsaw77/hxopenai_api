@@ -518,8 +518,8 @@ class OpenAI
 	@:noCompletion
 	private function postData(url:String, requestData:Dynamic, post:Bool, onSucceed:(response:Dynamic)->Void, onFail:(message:String, data:Dynamic)->Void):Void
 	{
-		#if (target.threaded)
-		var requestMutex:Mutex = new Mutex();
+		#if (target.threaded && !js)
+		final requestMutex:Mutex = new Mutex();
 
 		Thread.create(function():Void
 		{
@@ -537,7 +537,7 @@ class OpenAI
 	@:noCompletion
 	private function makeHttpRequest(url:String, requestData:Dynamic, post:Bool, onSucceed:(response:Dynamic)->Void, onFail:(message:String, data:Dynamic)->Void):Void
 	{
-		var request:Http = new Http(url);
+		final request:Http = new Http(url);
 
 		request.setHeader('Authorization', 'Bearer $apiKey');
 		request.setHeader('Content-Type', 'application/json');
