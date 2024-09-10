@@ -1,11 +1,8 @@
 package hxopenai_api;
 
+import haxe.EntryPoint;
 import haxe.Http;
 import haxe.Json;
-#if (target.threaded)
-import sys.thread.Mutex;
-import sys.thread.Thread;
-#end
 
 /**
  * Typedef for the structure of a chat completion request.
@@ -16,10 +13,12 @@ typedef ChatCompletionRequest =
 	 * The model name used for generating chat completions.
 	 */
 	model:String,
+
 	/**
 	 * Array of messages exchanged in the chat.
 	 */
 	messages:Array<Message>,
+
 	/**
 	 * Optional temperature parameter controlling randomness in text generation.
 	 */
@@ -55,6 +54,7 @@ typedef Message =
 	 * The role of the message sender (e.g., 'user' or 'system').
 	 */
 	role:String,
+
 	/**
 	 * The content of the message.
 	 */
@@ -70,10 +70,12 @@ typedef EmbeddingsRequest =
 	 * The input text or data for which embeddings are requested.
 	 */
 	input:String,
+
 	/**
 	 * The model name or identifier for generating embeddings.
 	 */
 	model:String,
+
 	/**
 	 * Optional user identifier for personalized embeddings.
 	 */
@@ -89,6 +91,7 @@ typedef ImageGenerationRequest =
 	 * The prompt or description for generating the image.
 	 */
 	prompt:String,
+
 	/**
 	 * Optional number of images to generate (default is 1).
 	 */
@@ -116,10 +119,12 @@ typedef AudioTranscriptionRequest =
 	 * The audio file or stream to transcribe.
 	 */
 	file:Dynamic,
+
 	/**
 	 * The model name or identifier for audio transcription.
 	 */
 	model:String,
+
 	/**
 	 * Optional prompt or context for the transcription.
 	 */
@@ -147,10 +152,12 @@ typedef AudioTranslationRequest =
 	 * The audio file or stream to translate.
 	 */
 	file:Dynamic,
+
 	/**
 	 * The model name or identifier for audio translation.
 	 */
 	model:String,
+
 	/**
 	 * Optional prompt or context for the translation.
 	 */
@@ -174,6 +181,7 @@ typedef FineTuneRequest =
 	 * The path or URL to the training data file.
 	 */
 	training_file:String,
+
 	/**
 	 * Optional path or URL to the validation data file.
 	 */
@@ -225,10 +233,12 @@ typedef CompletionRequest =
 	 * The model name or identifier for generating completions.
 	 */
 	model:String,
+
 	/**
 	 * The prompt or input text for which completions are generated.
 	 */
 	prompt:String,
+
 	/**
 	 * Optional maximum number of tokens in the generated completion.
 	 */
@@ -244,22 +254,27 @@ typedef CompletionResponse =
 	 * The unique identifier for the completion response.
 	 */
 	id:String,
+
 	/**
 	 * The type or object category of the response (e.g., 'text_completion').
 	 */
 	object:String,
+
 	/**
 	 * The timestamp when the response was created.
 	 */
 	created:Int,
+
 	/**
 	 * The model name or identifier used for generating the completion.
 	 */
 	model:String,
+
 	/**
 	 * Array of completion choices or generated texts.
 	 */
 	choices:Array<CompletionChoice>,
+
 	/**
 	 * Additional usage details or metadata associated with the response.
 	 */
@@ -275,14 +290,17 @@ typedef CompletionChoice =
 	 * The generated text or completion choice.
 	 */
 	text:String,
+
 	/**
 	 * The index or position of the choice in the list of completions.
 	 */
 	index:Int,
+
 	/**
 	 * Optional dynamic object containing log probabilities or additional information.
 	 */
 	?logprobs:Dynamic,
+
 	/**
 	 * Reason indicating the completion or generation stopping condition.
 	 */
@@ -298,22 +316,27 @@ typedef FineTuningJob =
 	 * The unique identifier for the fine-tuning job.
 	 */
 	id:String,
+
 	/**
 	 * The type or object category of the fine-tuning job (e.g., 'fine_tuning_job').
 	 */
 	object:String,
+
 	/**
 	 * The model name or identifier used for fine-tuning.
 	 */
 	model:String,
+
 	/**
 	 * The timestamp when the fine-tuning job was created.
 	 */
 	created:Int,
+
 	/**
 	 * The current status or state of the fine-tuning job (e.g., 'running', 'completed').
 	 */
 	status:String,
+
 	/**
 	 * The name or identifier of the fine-tuned model resulting from the job.
 	 */
@@ -341,14 +364,15 @@ typedef CompletionResponseCallbacks =
 	 *
 	 * @param response The parsed completion response object.
 	 */
-	onSucceed:(response:CompletionResponse)->Void,
+	onSucceed:(response:CompletionResponse) -> Void,
+
 	/**
 	 * Callback function to be executed on API request failure.
 	 *
 	 * @param error The error message indicating the reason for failure.
 	 * @param error Additional response data if avalible otherwise `null`.
 	 */
-	onFail:(message:String, data:Dynamic)->Void
+	onFail:(message:String, data:Dynamic) -> Void
 }
 
 /**
@@ -361,14 +385,15 @@ typedef FineTuningJobsResponseCallbacks =
 	 *
 	 * @param response The parsed fine-tuning jobs response object.
 	 */
-	onSucceed:(response:FineTuningJobsResponse)->Void,
+	onSucceed:(response:FineTuningJobsResponse) -> Void,
+
 	/**
 	 * Callback function to be executed on API request failure.
 	 *
 	 * @param error The error message indicating the reason for failure.
 	 * @param error Additional response data if avalible otherwise `null`.
 	 */
-	onFail:(message:String, data:Dynamic)->Void
+	onFail:(message:String, data:Dynamic) -> Void
 }
 
 /**
@@ -381,14 +406,15 @@ typedef DynamicResponseCallbacks =
 	 *
 	 * @param response The dynamic response object returned by the API.
 	 */
-	onSucceed:(response:Dynamic)->Void,
+	onSucceed:(response:Dynamic) -> Void,
+
 	/**
 	 * Callback function to be executed on API request failure.
 	 *
 	 * @param error The error message indicating the reason for failure.
 	 * @param error Additional response data if avalible otherwise `null`.
 	 */
-	onFail:(message:String, data:Dynamic)->Void
+	onFail:(message:String, data:Dynamic) -> Void
 }
 
 /**
@@ -423,7 +449,7 @@ class OpenAI
 	 * @param request The completion request object.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function completions(request:CompletionRequest, callback:CompletionResponseCallbacks):Void
+	public inline function completions(request:CompletionRequest, callback:CompletionResponseCallbacks):Void
 	{
 		postData('$baseURL/completions', request, true, callback.onSucceed, callback.onFail);
 	}
@@ -433,7 +459,7 @@ class OpenAI
 	 *
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function listFineTuningJobs(callback:FineTuningJobsResponseCallbacks):Void
+	public inline function listFineTuningJobs(callback:FineTuningJobsResponseCallbacks):Void
 	{
 		postData('$baseURL/fine_tuning/jobs', null, false, callback.onSucceed, callback.onFail);
 	}
@@ -444,7 +470,7 @@ class OpenAI
 	 * @param request The chat completion request object.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function createChatCompletion(request:ChatCompletionRequest, callback:DynamicResponseCallbacks):Void
+	public inline function createChatCompletion(request:ChatCompletionRequest, callback:DynamicResponseCallbacks):Void
 	{
 		postData('$baseURL/chat/completions', request, true, callback.onSucceed, callback.onFail);
 	}
@@ -455,7 +481,7 @@ class OpenAI
 	 * @param request The embeddings request object.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function createEmbedding(request:EmbeddingsRequest, callback:DynamicResponseCallbacks):Void
+	public inline function createEmbedding(request:EmbeddingsRequest, callback:DynamicResponseCallbacks):Void
 	{
 		postData('$baseURL/embeddings', request, true, callback.onSucceed, callback.onFail);
 	}
@@ -466,7 +492,7 @@ class OpenAI
 	 * @param request The image generation request object.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function generateImage(request:ImageGenerationRequest, callback:DynamicResponseCallbacks):Void
+	public inline function generateImage(request:ImageGenerationRequest, callback:DynamicResponseCallbacks):Void
 	{
 		postData('$baseURL/images/generations', request, true, callback.onSucceed, callback.onFail);
 	}
@@ -477,7 +503,7 @@ class OpenAI
 	 * @param request The audio transcription request object.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function transcribeAudio(request:AudioTranscriptionRequest, callback:DynamicResponseCallbacks):Void
+	public inline function transcribeAudio(request:AudioTranscriptionRequest, callback:DynamicResponseCallbacks):Void
 	{
 		postData('$baseURL/audio/transcriptions', request, true, callback.onSucceed, callback.onFail);
 	}
@@ -488,7 +514,7 @@ class OpenAI
 	 * @param request The audio translation request object.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function translateAudio(request:AudioTranslationRequest, callback:DynamicResponseCallbacks):Void
+	public inline function translateAudio(request:AudioTranslationRequest, callback:DynamicResponseCallbacks):Void
 	{
 		postData('$baseURL/audio/translations', request, true, callback.onSucceed, callback.onFail);
 	}
@@ -499,7 +525,7 @@ class OpenAI
 	 * @param request The fine-tune request object.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function createFineTune(request:FineTuneRequest, callback:DynamicResponseCallbacks):Void
+	public inline function createFineTune(request:FineTuneRequest, callback:DynamicResponseCallbacks):Void
 	{
 		postData('$baseURL/fine_tuning/jobs', request, true, callback.onSucceed, callback.onFail);
 	}
@@ -510,87 +536,74 @@ class OpenAI
 	 * @param fineTuneId The ID of the fine-tuning job to retrieve.
 	 * @param callback The callback functions for handling API response.
 	 */
-	public function retrieveFineTune(fineTuneId:String, callback:DynamicResponseCallbacks):Void
+	public inline function retrieveFineTune(fineTuneId:String, callback:DynamicResponseCallbacks):Void
 	{
 		postData('$baseURL/fine_tuning/jobs/$fineTuneId', null, false, callback.onSucceed, callback.onFail);
 	}
 
 	@:noCompletion
-	private function postData(url:String, requestData:Dynamic, post:Bool, onSucceed:(response:Dynamic)->Void, onFail:(message:String, data:Dynamic)->Void):Void
+	private function postData(url:String, requestData:Dynamic, post:Bool, onSucceed:(response:Dynamic) -> Void,
+			onFail:(message:String, data:Dynamic) -> Void):Void
 	{
-		#if (target.threaded && !js)
-		final requestMutex:Mutex = new Mutex();
-
-		Thread.create(function():Void
+		EntryPoint.addThread(function():Void
 		{
-			requestMutex.acquire();
+			final request:Http = new Http(url);
 
-			makeHttpRequest(url, requestData, post, onSucceed, onFail);
+			request.setHeader('Authorization', 'Bearer $apiKey');
+			request.setHeader('Content-Type', 'application/json');
 
-			requestMutex.release();
+			if (organization != null)
+				request.setHeader('OpenAI-Organization', organization);
+
+			if (project != null)
+				request.setHeader('OpenAI-Project', project);
+
+			request.onStatus = function(status:Int):Void
+			{
+				if (status >= 300 && status < 400 && request.responseHeaders.exists('Location'))
+				{
+					request.url = request.responseHeaders.get('Location');
+					request.request(post);
+				}
+				else if (status >= 300 && status < 400)
+				{
+					if (onFail != null)
+						onFail('Redirect location header missing', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null);
+				}
+			}
+
+			request.onData = function(data:String):Void
+			{
+				final response:Dynamic = Json.parse(data);
+
+				if (response != null)
+				{
+					if (onSucceed != null)
+						onSucceed(response);
+				}
+				else
+				{
+					if (onFail != null)
+						onFail('Unknown error', request.responseData != null
+							&& request.responseData.length > 0 ? Json.parse(request.responseData) : null);
+				}
+			}
+
+			request.onError = function(message:String):Void
+			{
+				if (onFail != null)
+					onFail(message, request.responseData != null
+						&& request.responseData.length > 0 ? Json.parse(request.responseData) : null);
+			}
+
+			#if js
+			request.async = true;
+			#end
+
+			if (post && requestData != null)
+				request.setPostData(Json.stringify(requestData));
+
+			request.request(post);
 		});
-		#else
-		makeHttpRequest(url, requestData, post, onSucceed, onFail);
-		#end
-	}
-
-	@:noCompletion
-	private function makeHttpRequest(url:String, requestData:Dynamic, post:Bool, onSucceed:(response:Dynamic)->Void, onFail:(message:String, data:Dynamic)->Void):Void
-	{
-		final request:Http = new Http(url);
-
-		request.setHeader('Authorization', 'Bearer $apiKey');
-		request.setHeader('Content-Type', 'application/json');
-
-		if (organization != null)
-			request.setHeader('OpenAI-Organization', organization);
-
-		if (project != null)
-			request.setHeader('OpenAI-Project', project);
-
-		request.onStatus = function(status:Int):Void
-		{
-			if (status >= 300 && status < 400 && request.responseHeaders.exists('Location'))
-			{
-				request.url = request.responseHeaders.get('Location');
-				request.request(post);
-			}
-			else if (status >= 300 && status < 400)
-			{
-				if (onFail != null)
-					onFail('Redirect location header missing', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null);
-			}
-		}
-
-		request.onData = function(data:String):Void
-		{
-			final response:Dynamic = Json.parse(data);
-
-			if (response != null)
-			{
-				if (onSucceed != null)
-					onSucceed(response);
-			}
-			else
-			{
-				if (onFail != null)
-					onFail('Unknown error', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null);
-			}
-		}
-
-		request.onError = function(message:String):Void
-		{
-			if (onFail != null)
-				onFail(message, request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null);
-		}
-
-		#if js
-		request.async = true;
-		#end
-
-		if (post && requestData != null)
-			request.setPostData(Json.stringify(requestData));
-
-		request.request(post);
 	}
 }
