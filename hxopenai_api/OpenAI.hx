@@ -1,8 +1,8 @@
 package hxopenai_api;
 
-import haxe.EntryPoint;
 import haxe.Http;
 import haxe.Json;
+import haxe.MainLoop;
 
 /**
  * Typedef for the structure of a chat completion request.
@@ -545,7 +545,7 @@ class OpenAI
 	private function postData(url:String, requestData:Dynamic, post:Bool, onSucceed:(response:Dynamic) -> Void,
 			onFail:(message:String, data:Dynamic) -> Void):Void
 	{
-		EntryPoint.addThread(function():Void
+		MainLoop.addThread(function():Void
 		{
 			final request:Http = new Http(url);
 
