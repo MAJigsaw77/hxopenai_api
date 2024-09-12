@@ -568,7 +568,7 @@ class OpenAI
 				else if (status >= 300 && status < 400)
 				{
 					if (onFail != null)
-						onFail('Redirect location header missing', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null);
+						MainLoop.runInMainThread(() -> onFail('Redirect location header missing', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null));
 				}
 			}
 
@@ -579,21 +579,25 @@ class OpenAI
 				if (response != null)
 				{
 					if (onSucceed != null)
-						onSucceed(response);
+						MainLoop.runInMainThread(() -> onSucceed(response));
 				}
 				else
 				{
 					if (onFail != null)
-						onFail('Unknown error', request.responseData != null
-							&& request.responseData.length > 0 ? Json.parse(request.responseData) : null);
+					{
+						MainLoop.runInMainThread(() -> onFail('Unknown error', request.responseData != null
+							&& request.responseData.length > 0 ? Json.parse(request.responseData) : null));
+					}
 				}
 			}
 
 			request.onError = function(message:String):Void
 			{
 				if (onFail != null)
-					onFail(message, request.responseData != null
-						&& request.responseData.length > 0 ? Json.parse(request.responseData) : null);
+				{
+					MainLoop.runInMainThread(() -> onFail(message, request.responseData != null
+						&& request.responseData.length > 0 ? Json.parse(request.responseData) : null));
+				}
 			}
 
 			#if js
