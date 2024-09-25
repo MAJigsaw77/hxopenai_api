@@ -414,7 +414,7 @@ typedef DynamicResponseCallbacks =
 	 * @param error The error message indicating the reason for failure.
 	 * @param error Additional response data if avalible otherwise `null`.
 	 */
-	onFail:(message:String, data:Dynamic) -> Void
+	onFail:(message:String, data:Null<Dynamic>) -> Void
 }
 
 /**
@@ -571,8 +571,14 @@ class OpenAI
 				else if (status >= 300 && status < 400)
 				{
 					if (onFail != null)
-						MainLoop.runInMainThread(() ->
-							onFail('Redirect location header missing', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null));
+					{
+						final responseData:Null<String> = request.responseData;
+
+						if (responseData != null && responseData.length > 0)
+							MainLoop.runInMainThread(() -> onFail('Redirect location header missing', Json.parse(responseData)));
+						else
+							MainLoop.runInMainThread(() -> onFail('Redirect location header missing', null));
+					}
 				}
 			}
 
