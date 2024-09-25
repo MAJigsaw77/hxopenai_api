@@ -423,10 +423,10 @@ typedef DynamicResponseCallbacks =
 @:nullSafety
 class OpenAI
 {
-	public var apiKey(default, null):String;
-	public var baseURL(default, null):String;
-	public var organization(default, null):String;
-	public var project(default, null):String;
+	public var apiKey(default, null):Null<String>;
+	public var baseURL(default, null):Null<String>;
+	public var organization(default, null):Null<String>;
+	public var project(default, null):Null<String>;
 
 	/**
 	 * Creates an instance of OpenAI API client.
