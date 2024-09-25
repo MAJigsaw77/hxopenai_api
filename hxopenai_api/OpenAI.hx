@@ -594,7 +594,7 @@ class OpenAI
 						if (responseData != null && responseData.length > 0)
 							MainLoop.runInMainThread(() -> onFail('Unknown error', Json.parse(responseData)));
 						else
-							MainLoop.runInMainThread(() -> onFail('Unknown error', null);
+							MainLoop.runInMainThread(() -> onFail('Unknown error', null));
 					}
 				}
 			}
@@ -608,7 +608,7 @@ class OpenAI
 					if (responseData != null && responseData.length > 0)
 						MainLoop.runInMainThread(() -> onFail(message, Json.parse(responseData)));
 					else
-						MainLoop.runInMainThread(() -> onFail(message, null);
+						MainLoop.runInMainThread(() -> onFail(message, null));
 				}
 			}
 
