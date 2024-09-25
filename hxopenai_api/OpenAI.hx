@@ -372,7 +372,7 @@ typedef CompletionResponseCallbacks =
 	 * @param error The error message indicating the reason for failure.
 	 * @param error Additional response data if avalible otherwise `null`.
 	 */
-	onFail:(message:String, data:Dynamic) -> Void
+	onFail:(message:String, data:Null<Dynamic>) -> Void
 }
 
 /**
@@ -393,7 +393,7 @@ typedef FineTuningJobsResponseCallbacks =
 	 * @param error The error message indicating the reason for failure.
 	 * @param error Additional response data if avalible otherwise `null`.
 	 */
-	onFail:(message:String, data:Dynamic) -> Void
+	onFail:(message:String, data:Null<Dynamic>) -> Void
 }
 
 /**
@@ -544,7 +544,7 @@ class OpenAI
 
 	@:noCompletion
 	private function postData(url:String, requestData:Dynamic, post:Bool, onSucceed:(response:Dynamic) -> Void,
-			onFail:(message:String, data:Dynamic) -> Void):Void
+			onFail:(message:String, data:Null<Dynamic>) -> Void):Void
 	{
 		MainLoop.addThread(function():Void
 		{
@@ -571,7 +571,8 @@ class OpenAI
 				else if (status >= 300 && status < 400)
 				{
 					if (onFail != null)
-						MainLoop.runInMainThread(() -> onFail('Redirect location header missing', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null));
+						MainLoop.runInMainThread(() ->
+							onFail('Redirect location header missing', request.responseData != null && request.responseData.length > 0 ? Json.parse(request.responseData) : null));
 				}
 			}
 
@@ -588,8 +589,12 @@ class OpenAI
 				{
 					if (onFail != null)
 					{
-						MainLoop.runInMainThread(() -> onFail('Unknown error', request.responseData != null
-							&& request.responseData.length > 0 ? Json.parse(request.responseData) : null));
+						final responseData:Null<String> = request.responseData;
+
+						if (responseData != null && responseData.length > 0)
+							MainLoop.runInMainThread(() -> onFail('Unknown error', Json.parse(responseData)));
+						else
+							MainLoop.runInMainThread(() -> onFail('Unknown error', null);
 					}
 				}
 			}
@@ -598,8 +603,12 @@ class OpenAI
 			{
 				if (onFail != null)
 				{
-					MainLoop.runInMainThread(() -> onFail(message, request.responseData != null
-						&& request.responseData.length > 0 ? Json.parse(request.responseData) : null));
+					final responseData:Null<String> = request.responseData;
+
+					if (responseData != null && responseData.length > 0)
+						MainLoop.runInMainThread(() -> onFail(message, Json.parse(responseData)));
+					else
+						MainLoop.runInMainThread(() -> onFail(message, null);
 				}
 			}
 
