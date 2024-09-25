@@ -420,6 +420,7 @@ typedef DynamicResponseCallbacks =
 /**
  * A class for interacting with OpenAI API.
  */
+@:nullSafety
 class OpenAI
 {
 	public var apiKey(default, null):String;
@@ -560,9 +561,11 @@ class OpenAI
 
 			request.onStatus = function(status:Int):Void
 			{
-				if (status >= 300 && status < 400 && request.responseHeaders.exists('Location'))
+				final responseURL:Null<String> = request.responseHeaders.get('Location');
+
+				if (responseURL != null && (status >= 300 && status < 400))
 				{
-					request.url = request.responseHeaders.get('Location');
+					request.url = responseURL;
 					request.request(post);
 				}
 				else if (status >= 300 && status < 400)
